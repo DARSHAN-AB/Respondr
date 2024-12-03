@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "277374744612",
+    "project_id": "respondr-99b9d",
+    "storage_bucket": "respondr-99b9d.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:277374744612:android:d6837d652d9509746c40b1",
+        "android_client_info": {
+          "package_name": "com.example.respondr"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCKce-yaZ7BJNgtLznL1YiFpjGXWDafqMQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
