@@ -52,14 +52,23 @@
                 android:textColor="@color/black"
                 android:layout_marginTop="1dp"/>
 
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Email"
+                android:textColor="@color/black"
+                android:textSize="16dp"
+                android:layout_marginLeft="0dp"
+                android:layout_marginTop="16dp"/>
+
             <EditText
                 android:layout_width="match_parent"
                 android:layout_height="50dp"
                 android:id="@+id/signup_email"
                 android:background="@drawable/lavendar_border"
-                android:layout_marginTop="20dp"
+                android:layout_marginTop="10dp"
                 android:padding="8dp"
-                android:hint="Email"
+                android:hint="hello@respondr.com"
                 android:singleLine="true"
                 android:ellipsize="end"
                 android:scrollHorizontally="true"
@@ -69,14 +78,24 @@
                 android:drawablePadding="8dp"
                 android:textColor="@color/black"/>
 
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Password"
+                android:textColor="@color/black"
+                android:textSize="16dp"
+                android:layout_marginLeft="0dp"
+                android:layout_marginTop="16dp"/>
+
             <EditText
                 android:layout_width="match_parent"
                 android:layout_height="50dp"
                 android:id="@+id/signup_password"
                 android:background="@drawable/lavendar_border"
-                android:layout_marginTop="20dp"
+                android:layout_marginTop="10dp"
                 android:padding="8dp"
-                android:hint="Password"
+                android:hint="******"
+                android:letterSpacing="0.3"
                 android:singleLine="true"
                 android:ellipsize="end"
                 android:scrollHorizontally="true"
@@ -86,14 +105,24 @@
                 android:drawablePadding="8dp"
                 android:textColor="@color/black"/>
 
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Confirm password"
+                android:textColor="@color/black"
+                android:textSize="16dp"
+                android:layout_marginLeft="0dp"
+                android:layout_marginTop="16dp"/>
+
             <EditText
                 android:layout_width="match_parent"
                 android:layout_height="50dp"
                 android:id="@+id/signup_confirm_password"
                 android:background="@drawable/lavendar_border"
-                android:layout_marginTop="20dp"
+                android:layout_marginTop="10dp"
                 android:padding="8dp"
-                android:hint="Confirm Password"
+                android:hint="******"
+                android:letterSpacing="0.3"
                 android:singleLine="true"
                 android:ellipsize="end"
                 android:scrollHorizontally="true"

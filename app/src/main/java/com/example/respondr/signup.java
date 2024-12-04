@@ -52,15 +52,10 @@ public class signup extends AppCompatActivity {
                     signupEmail.requestFocus();
                 }
 
-                if(signuppassword != signupconfirmpassword){
-                    signupConfirmPassword.setError("Passwords do not match");
-                    signupConfirmPassword.requestFocus();
-                }
-
                 if(signuppassword.isEmpty()){
                     signupPassword.setError("Please enter your password");
                     signupPassword.requestFocus();
-                } else {
+                } else if(signuppassword.equals(signupconfirmpassword)) {
                     auth.createUserWithEmailAndPassword(signupemail, signuppassword).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
                         @Override
                         public void onComplete(@NonNull Task<AuthResult> task) {
@@ -74,6 +69,9 @@ public class signup extends AppCompatActivity {
                         }
                     });
 
+                } else {
+                    signupConfirmPassword.setError("Passwords do not match");
+                    signupConfirmPassword.requestFocus();
                 }
 
             }
