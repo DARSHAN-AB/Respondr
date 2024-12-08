@@ -1,7 +1,10 @@
 package com.example.respondr;
 
 import android.content.Intent;
+import android.graphics.Typeface;
 import android.os.Bundle;
+import android.text.InputType;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -26,6 +29,7 @@ public class signup extends AppCompatActivity {
     EditText signupEmail, signupPassword, signupConfirmPassword;
     private Button signupButton;
     private TextView loginRedirect;
+    private boolean isPasswordVisible = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,6 +43,74 @@ public class signup extends AppCompatActivity {
         signupConfirmPassword = findViewById(R.id.signup_confirm_password);
         signupButton = findViewById(R.id.signup_button);
         loginRedirect = findViewById(R.id.loginRedirect);
+
+        float textSizeInDp = 14f;
+        float scale = getResources().getDisplayMetrics().density;
+        float textSizeInPx = textSizeInDp * scale;
+
+        signupPassword.setLetterSpacing(0.4f);
+        signupPassword.setTextSize(textSizeInPx / getResources().getDisplayMetrics().scaledDensity); // Set consistent text size
+        signupPassword.setTypeface(Typeface.DEFAULT);
+
+        signupPassword.setOnTouchListener((v, event) -> {
+            if (event.getAction() == MotionEvent.ACTION_UP) {
+                // Detect if the right drawable is clicked
+                if (event.getRawX() >= (signupPassword.getRight() - signupPassword.getCompoundDrawables()[2].getBounds().width())) {
+                    if (isPasswordVisible) {
+                        // Switch to hidden password
+                        signupPassword.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
+                        signupPassword.setCompoundDrawablesRelativeWithIntrinsicBounds(
+                                R.drawable.baseline_lock_24, 0, R.drawable.baseline_visibility_off_24, 0);
+                    } else {
+                        // Switch to visible password
+                        signupPassword.setInputType(InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD);
+                        signupPassword.setCompoundDrawablesRelativeWithIntrinsicBounds(
+                                R.drawable.baseline_lock_24, 0, R.drawable.baseline_visibility_24, 0);
+                    }
+
+                    signupPassword.setTextSize(textSizeInPx / getResources().getDisplayMetrics().scaledDensity); // Set consistent text size
+                    signupPassword.setLetterSpacing(0.4f);
+                    signupPassword.setTypeface(Typeface.DEFAULT);
+                    isPasswordVisible = !isPasswordVisible;
+                    signupPassword.setSelection(signupPassword.getText().length());
+
+                    return true;
+                }
+            }
+            return false;
+        });
+
+        signupConfirmPassword.setLetterSpacing(0.4f);
+        signupConfirmPassword.setTextSize(textSizeInPx / getResources().getDisplayMetrics().scaledDensity); // Set consistent text size
+        signupConfirmPassword.setTypeface(Typeface.DEFAULT);
+
+        signupConfirmPassword.setOnTouchListener((v, event) -> {
+            if (event.getAction() == MotionEvent.ACTION_UP) {
+                // Detect if the right drawable is clicked
+                if (event.getRawX() >= (signupConfirmPassword.getRight() - signupConfirmPassword.getCompoundDrawables()[2].getBounds().width())) {
+                    if (isPasswordVisible) {
+                        // Switch to hidden password
+                        signupConfirmPassword.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
+                        signupConfirmPassword.setCompoundDrawablesRelativeWithIntrinsicBounds(
+                                R.drawable.baseline_lock_24, 0, R.drawable.baseline_visibility_off_24, 0);
+                    } else {
+                        // Switch to visible password
+                        signupConfirmPassword.setInputType(InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD);
+                        signupConfirmPassword.setCompoundDrawablesRelativeWithIntrinsicBounds(
+                                R.drawable.baseline_lock_24, 0, R.drawable.baseline_visibility_24, 0);
+                    }
+
+                    signupConfirmPassword.setTextSize(textSizeInPx / getResources().getDisplayMetrics().scaledDensity); // Set consistent text size
+                    signupConfirmPassword.setLetterSpacing(0.4f);
+                    signupConfirmPassword.setTypeface(Typeface.DEFAULT);
+                    isPasswordVisible = !isPasswordVisible;
+                    signupConfirmPassword.setSelection(signupPassword.getText().length());
+
+                    return true;
+                }
+            }
+            return false;
+        });
 
         signupButton.setOnClickListener(new View.OnClickListener() {
             @Override

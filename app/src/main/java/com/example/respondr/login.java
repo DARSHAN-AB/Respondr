@@ -1,8 +1,11 @@
 package com.example.respondr;
 
 import android.content.Intent;
+import android.graphics.Typeface;
 import android.os.Bundle;
+import android.text.InputType;
 import android.util.Patterns;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -27,6 +30,7 @@ public class login extends AppCompatActivity {
     private EditText loginEmail, loginPassword;
     private Button loginButton;
     private TextView signupRedirect;
+    private boolean isPasswordVisible = false;
 
 
     @Override
@@ -40,6 +44,42 @@ public class login extends AppCompatActivity {
         loginPassword = findViewById(R.id.login_password);
         loginButton = findViewById(R.id.login_button);
         signupRedirect = findViewById(R.id.signupRedirect);
+
+        float textSizeInDp = 14f;
+        float scale = getResources().getDisplayMetrics().density;
+        float textSizeInPx = textSizeInDp * scale;
+
+        loginPassword.setLetterSpacing(0.4f);
+        loginPassword.setTextSize(textSizeInPx / getResources().getDisplayMetrics().scaledDensity); // Set consistent text size
+        loginPassword.setTypeface(Typeface.DEFAULT);
+
+        loginPassword.setOnTouchListener((v, event) -> {
+            if (event.getAction() == MotionEvent.ACTION_UP) {
+                // Detect if the right drawable is clicked
+                if (event.getRawX() >= (loginPassword.getRight() - loginPassword.getCompoundDrawables()[2].getBounds().width())) {
+                    if (isPasswordVisible) {
+                        // Switch to hidden password
+                        loginPassword.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
+                        loginPassword.setCompoundDrawablesRelativeWithIntrinsicBounds(
+                                R.drawable.baseline_lock_24, 0, R.drawable.baseline_visibility_off_24, 0);
+                    } else {
+                        // Switch to visible password
+                        loginPassword.setInputType(InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD);
+                        loginPassword.setCompoundDrawablesRelativeWithIntrinsicBounds(
+                                R.drawable.baseline_lock_24, 0, R.drawable.baseline_visibility_24, 0);
+                    }
+
+                    loginPassword.setTextSize(textSizeInPx / getResources().getDisplayMetrics().scaledDensity); // Set consistent text size
+                    loginPassword.setLetterSpacing(0.4f);
+                    loginPassword.setTypeface(Typeface.DEFAULT);
+                    isPasswordVisible = !isPasswordVisible;
+                    loginPassword.setSelection(loginPassword.getText().length());
+
+                    return true;
+                }
+            }
+            return false;
+        });
 
         loginButton.setOnClickListener(new View.OnClickListener() {
             @Override

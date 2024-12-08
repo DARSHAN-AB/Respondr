@@ -69,12 +69,13 @@
                 android:layout_marginTop="10dp"
                 android:padding="8dp"
                 android:hint="hello@respondr.com"
+                android:textSize="14dp"
                 android:singleLine="true"
                 android:ellipsize="end"
                 android:scrollHorizontally="true"
                 android:inputType="textEmailAddress"
                 android:imeOptions="actionNext"
-                android:drawableLeft="@drawable/baseline_email_24"
+                android:drawableStart="@drawable/baseline_email_24"
                 android:drawablePadding="8dp"
                 android:textColor="@color/black"/>
 
@@ -95,13 +96,15 @@
                 android:layout_marginTop="10dp"
                 android:padding="8dp"
                 android:hint="******"
+                android:textSize="14dp"
                 android:letterSpacing="0.3"
                 android:singleLine="true"
                 android:ellipsize="end"
                 android:scrollHorizontally="true"
                 android:inputType="textPassword"
                 android:imeOptions="actionNext"
-                android:drawableLeft="@drawable/baseline_lock_24"
+                android:drawableStart="@drawable/baseline_lock_24"
+                android:drawableEnd="@drawable/baseline_visibility_off_24"
                 android:drawablePadding="8dp"
                 android:textColor="@color/black"/>
 
@@ -122,13 +125,15 @@
                 android:layout_marginTop="10dp"
                 android:padding="8dp"
                 android:hint="******"
+                android:textSize="14dp"
                 android:letterSpacing="0.3"
                 android:singleLine="true"
                 android:ellipsize="end"
                 android:scrollHorizontally="true"
                 android:inputType="textPassword"
                 android:imeOptions="actionNext"
-                android:drawableLeft="@drawable/baseline_lock_24"
+                android:drawableStart="@drawable/baseline_lock_24"
+                android:drawableEnd="@drawable/baseline_visibility_off_24"
                 android:drawablePadding="8dp"
                 android:textColor="@color/black"/>
 
