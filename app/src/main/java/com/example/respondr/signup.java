@@ -7,6 +7,7 @@ import android.text.InputType;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -29,6 +30,7 @@ public class signup extends AppCompatActivity {
     EditText signupEmail, signupPassword, signupConfirmPassword;
     private Button signupButton;
     private TextView loginRedirect;
+    CheckBox checkbox;
     private boolean isPasswordVisible = false;
 
     @Override
@@ -43,6 +45,7 @@ public class signup extends AppCompatActivity {
         signupConfirmPassword = findViewById(R.id.signup_confirm_password);
         signupButton = findViewById(R.id.signup_button);
         loginRedirect = findViewById(R.id.loginRedirect);
+        checkbox = findViewById(R.id.terms_checkbox);
 
         float textSizeInDp = 14f;
         float scale = getResources().getDisplayMetrics().density;
@@ -124,23 +127,27 @@ public class signup extends AppCompatActivity {
                     signupEmail.requestFocus();
                 }
 
-                if(signuppassword.isEmpty()){
+                if (!checkbox.isChecked()) {
+                    // Show a message if the checkbox is not checked
+                    Toast.makeText(signup.this,
+                            "Please accept the Terms and Conditions to proceed",
+                            Toast.LENGTH_SHORT).show();
+                }else if(signuppassword.isEmpty()){
                     signupPassword.setError("Please enter your password");
                     signupPassword.requestFocus();
                 } else if(signuppassword.equals(signupconfirmpassword)) {
-                    auth.createUserWithEmailAndPassword(signupemail, signuppassword).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
-                        @Override
-                        public void onComplete(@NonNull Task<AuthResult> task) {
+                        auth.createUserWithEmailAndPassword(signupemail, signuppassword).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
+                            @Override
+                            public void onComplete(@NonNull Task<AuthResult> task) {
 
-                            if(task.isSuccessful()){
-                                Toast.makeText(signup.this, "Signup Successfull", Toast.LENGTH_SHORT).show();
-                                startActivity(new Intent(signup.this, login.class));
-                            } else {
-                                Toast.makeText(signup.this, "Signup Failed" + task.getException().getMessage(), Toast.LENGTH_SHORT).show();
+                                if(task.isSuccessful()){
+                                    Toast.makeText(signup.this, "Signup Successfull", Toast.LENGTH_SHORT).show();
+                                    startActivity(new Intent(signup.this, login.class));
+                                } else {
+                                    Toast.makeText(signup.this, "Signup Failed" + task.getException().getMessage(), Toast.LENGTH_SHORT).show();
+                                }
                             }
-                        }
-                    });
-
+                        });
                 } else {
                     signupConfirmPassword.setError("Passwords do not match");
                     signupConfirmPassword.requestFocus();
