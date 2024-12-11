@@ -1,9 +1,15 @@
 package com.example.respondr;
 
 import android.content.Intent;
+import android.graphics.Color;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.text.InputType;
+import android.text.SpannableString;
+import android.text.Spanned;
+import android.text.method.LinkMovementMethod;
+import android.text.style.ClickableSpan;
+import android.text.style.UnderlineSpan;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
@@ -29,7 +35,7 @@ public class signup extends AppCompatActivity {
     private FirebaseAuth auth;
     EditText signupEmail, signupPassword, signupConfirmPassword;
     private Button signupButton;
-    private TextView loginRedirect;
+    private TextView loginRedirect,termsText;
     CheckBox checkbox;
     private boolean isPasswordVisible = false;
 
@@ -46,6 +52,35 @@ public class signup extends AppCompatActivity {
         signupButton = findViewById(R.id.signup_button);
         loginRedirect = findViewById(R.id.loginRedirect);
         checkbox = findViewById(R.id.terms_checkbox);
+        termsText = findViewById(R.id.terms_text);
+
+
+        String fullText = "I accept the Terms and Conditions";
+        SpannableString spannable = new SpannableString(fullText);
+
+// Correctly specify the indices for "Terms and Conditions"
+        int start = fullText.indexOf("Terms and Conditions");
+        int end = start + "Terms and Conditions".length();
+
+// Apply the underline
+        UnderlineSpan underlineSpan = new UnderlineSpan();
+        spannable.setSpan(underlineSpan, start, end, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+
+// Apply the clickable span
+        ClickableSpan clickableSpan = new ClickableSpan() {
+            @Override
+            public void onClick(View widget) {
+                Intent intent = new Intent(signup.this, termsandconditions.class);
+                startActivity(intent);
+            }
+        };
+        spannable.setSpan(clickableSpan, start, end, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+
+// Set the spannable text
+        termsText.setText(spannable);
+        termsText.setMovementMethod(LinkMovementMethod.getInstance());
+        termsText.setHighlightColor(Color.TRANSPARENT);
+
 
         float textSizeInDp = 14f;
         float scale = getResources().getDisplayMetrics().density;
