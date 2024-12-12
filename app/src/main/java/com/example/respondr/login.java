@@ -1,9 +1,15 @@
 package com.example.respondr;
 
 import android.content.Intent;
+import android.graphics.Color;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.text.InputType;
+import android.text.SpannableString;
+import android.text.Spanned;
+import android.text.method.LinkMovementMethod;
+import android.text.style.ClickableSpan;
+import android.text.style.UnderlineSpan;
 import android.util.Patterns;
 import android.view.MotionEvent;
 import android.view.View;
@@ -44,6 +50,33 @@ public class login extends AppCompatActivity {
         loginPassword = findViewById(R.id.login_password);
         loginButton = findViewById(R.id.login_button);
         signupRedirect = findViewById(R.id.signupRedirect);
+
+
+        String signupText = "Don't have an account? Register";
+        SpannableString spannableSignupText = new SpannableString(signupText);
+
+// Find the start and end indices of "Login"
+        int startLogin = signupText.indexOf("Register");
+        int endLogin = startLogin + "Register".length();
+
+// Apply the underline to "Login"
+        UnderlineSpan underlineSpansignup = new UnderlineSpan();
+        spannableSignupText.setSpan(underlineSpansignup, startLogin, endLogin, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+
+// Make "Login" clickable
+        ClickableSpan clickableSpanLogin = new ClickableSpan() {
+            @Override
+            public void onClick(View widget) {
+                // When "Login" is clicked, open the login activity
+                startActivity(new Intent(login.this, signup.class));
+            }
+        };
+        spannableSignupText.setSpan(clickableSpanLogin, startLogin, endLogin, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+
+// Set the spannable text to the TextView
+        signupRedirect.setText(spannableSignupText);
+        signupRedirect.setMovementMethod(LinkMovementMethod.getInstance()); // Enable clickable links
+        signupRedirect.setHighlightColor(Color.TRANSPARENT);
 
         float textSizeInDp = 14f;
         float scale = getResources().getDisplayMetrics().density;
@@ -116,12 +149,6 @@ public class login extends AppCompatActivity {
             }
         });
 
-        signupRedirect.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                startActivity(new Intent(login.this, signup.class));
-            }
-        });
 
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());

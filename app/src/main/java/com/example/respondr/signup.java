@@ -55,6 +55,32 @@ public class signup extends AppCompatActivity {
         termsText = findViewById(R.id.terms_text);
 
 
+        String loginText = "Have an account? Login";
+        SpannableString spannableLoginText = new SpannableString(loginText);
+
+// Find the start and end indices of "Login"
+        int startLogin = loginText.indexOf("Login");
+        int endLogin = startLogin + "Login".length();
+
+// Apply the underline to "Login"
+        UnderlineSpan underlineSpanLogin = new UnderlineSpan();
+        spannableLoginText.setSpan(underlineSpanLogin, startLogin, endLogin, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+
+// Make "Login" clickable
+        ClickableSpan clickableSpanLogin = new ClickableSpan() {
+            @Override
+            public void onClick(View widget) {
+                // When "Login" is clicked, open the login activity
+                startActivity(new Intent(signup.this, login.class));
+            }
+        };
+        spannableLoginText.setSpan(clickableSpanLogin, startLogin, endLogin, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+
+// Set the spannable text to the TextView
+        loginRedirect.setText(spannableLoginText);
+        loginRedirect.setMovementMethod(LinkMovementMethod.getInstance()); // Enable clickable links
+        loginRedirect.setHighlightColor(Color.TRANSPARENT);
+
         String fullText = "I accept the Terms and Conditions";
         SpannableString spannable = new SpannableString(fullText);
 
@@ -197,12 +223,6 @@ public class signup extends AppCompatActivity {
             return insets;
         });
 
-        loginRedirect.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                startActivity(new Intent(signup.this, login.class));
-            }
-        });
 
     }
 }
