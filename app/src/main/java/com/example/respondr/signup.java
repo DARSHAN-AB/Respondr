@@ -1,5 +1,6 @@
 package com.example.respondr;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.Typeface;
@@ -15,6 +16,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -53,7 +55,9 @@ public class signup extends AppCompatActivity {
         loginRedirect = findViewById(R.id.loginRedirect);
         checkbox = findViewById(R.id.terms_checkbox);
         termsText = findViewById(R.id.terms_text);
-
+        ProgressDialog progressS = new ProgressDialog(signup.this);
+        progressS.setMessage("Creating a account...");
+        progressS.setCancelable(false);
 
         String loginText = "Have an account? Login";
         SpannableString spannableLoginText = new SpannableString(loginText);
@@ -182,38 +186,41 @@ public class signup extends AppCompatActivity {
                 String signupemail = signupEmail.getText().toString().trim();
                 String signuppassword = signupPassword.getText().toString().trim();
                 String signupconfirmpassword = signupConfirmPassword.getText().toString().trim();
+                progressS.dismiss();
 
                 if(signupemail.isEmpty()){
                     signupEmail.setError("Please enter your email");
                     signupEmail.requestFocus();
+                }else if(signuppassword.isEmpty()){
+                    signupPassword.setError("Please enter your password");
+                    signupPassword.requestFocus();
                 }
 
-                if (!checkbox.isChecked()) {
+                if(!signuppassword.equals(signupconfirmpassword)) {
+                    signupConfirmPassword.setError("Passwords do not match");
+                    signupConfirmPassword.requestFocus();
+                } else if (!checkbox.isChecked()) {
                     // Show a message if the checkbox is not checked
                     Toast.makeText(signup.this,
                             "Please accept the Terms and Conditions to proceed",
                             Toast.LENGTH_SHORT).show();
-                }else if(signuppassword.isEmpty()){
-                    signupPassword.setError("Please enter your password");
-                    signupPassword.requestFocus();
+
                 } else if(signuppassword.equals(signupconfirmpassword)) {
-                        auth.createUserWithEmailAndPassword(signupemail, signuppassword).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
-                            @Override
-                            public void onComplete(@NonNull Task<AuthResult> task) {
-
-                                if(task.isSuccessful()){
-                                    Toast.makeText(signup.this, "Signup Successfull", Toast.LENGTH_SHORT).show();
-                                    startActivity(new Intent(signup.this, login.class));
-                                } else {
-                                    Toast.makeText(signup.this, "Signup Failed" + task.getException().getMessage(), Toast.LENGTH_SHORT).show();
-                                }
+                    progressS.show();
+                    auth.createUserWithEmailAndPassword(signupemail, signuppassword).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
+                        @Override
+                        public void onComplete(@NonNull Task<AuthResult> task) {
+                            if(task.isSuccessful()){
+                                progressS.dismiss();
+                                Toast.makeText(signup.this, "Signup Successfull", Toast.LENGTH_SHORT).show();
+                                startActivity(new Intent(signup.this, login.class));
+                            } else {
+                                progressS.dismiss();
+                                Toast.makeText(signup.this, "Signup Failed" + task.getException().getMessage(), Toast.LENGTH_SHORT).show();
                             }
-                        });
-                } else {
-                    signupConfirmPassword.setError("Passwords do not match");
-                    signupConfirmPassword.requestFocus();
+                        }
+                    });
                 }
-
             }
         });
 

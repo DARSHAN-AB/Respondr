@@ -1,5 +1,6 @@
 package com.example.respondr;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.Typeface;
@@ -39,6 +40,7 @@ public class login extends AppCompatActivity {
     private boolean isPasswordVisible = false;
 
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -50,7 +52,9 @@ public class login extends AppCompatActivity {
         loginPassword = findViewById(R.id.login_password);
         loginButton = findViewById(R.id.login_button);
         signupRedirect = findViewById(R.id.signupRedirect);
-
+        ProgressDialog progressL = new ProgressDialog(login.this);
+        progressL.setMessage("Logging in...");
+        progressL.setCancelable(false);
 
         String signupText = "Don't have an account? Register";
         SpannableString spannableSignupText = new SpannableString(signupText);
@@ -120,13 +124,16 @@ public class login extends AppCompatActivity {
 
                 String loginemail = loginEmail.getText().toString();
                 String loginpassword = loginPassword.getText().toString();
+                progressL.dismiss();
 
                 if(!loginemail.isEmpty() && Patterns.EMAIL_ADDRESS.matcher(loginemail).matches()){
                     if(!loginpassword.isEmpty()){
+                        progressL.show();
                         auth.signInWithEmailAndPassword(loginemail,loginpassword)
                                 .addOnSuccessListener(new OnSuccessListener<AuthResult>() {
                                     @Override
                                     public void onSuccess(AuthResult authResult) {
+                                        progressL.dismiss();
                                         Toast.makeText(login.this, "Login Successful", Toast.LENGTH_SHORT).show();
                                         startActivity(new Intent(login.this, MainActivity.class));
                                         finish();
@@ -134,7 +141,10 @@ public class login extends AppCompatActivity {
                                 }).addOnFailureListener(new OnFailureListener() {
                                     @Override
                                     public void onFailure(@NonNull Exception e) {
+                                        progressL.dismiss();
                                         Toast.makeText(login.this, "Login Failed", Toast.LENGTH_SHORT).show();
+                                        loginPassword.setError("Invalid username or password");
+                                        loginPassword.requestFocus();
                                     }
                                 });
                     } else {
