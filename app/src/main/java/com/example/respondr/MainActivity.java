@@ -68,7 +68,7 @@ public class MainActivity extends AppCompatActivity {
         // Passing each menu ID as a set of Ids because each
         // menu should be considered as top level destinations.
         mAppBarConfiguration = new AppBarConfiguration.Builder(
-                R.id.nav_home, R.id.nav_gallery, R.id.nav_slideshow)
+                R.id.nav_home)
                 .setOpenableLayout(drawer)
                 .build();
         NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment_content_main);
@@ -108,7 +108,7 @@ public class MainActivity extends AppCompatActivity {
                 // Redirect to login
                 redirectToLogin();
             }
-        }, 2000); // 2-second delay for simulation
+        }, 1000); // 1-second delay for simulation
     }
 
     private void redirectToLogin() {
