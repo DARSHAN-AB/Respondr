@@ -14,6 +14,10 @@
             android:icon="@drawable/inbox"
             android:title="Inbox" />
 
+    </group>
+
+    <group android:id="@+id/settingsdivider">
+
         <item
             android:id="@+id/settings"
             android:icon="@drawable/setting"
@@ -24,12 +28,9 @@
             android:icon="@drawable/help"
             android:title="Help" />
 
-    </group>
-
-    <group android:id="@+id/profile">
         <item
             android:id="@+id/logout_button"
-            android:icon="@drawable/ic_logout"
+            android:icon="@drawable/log_out"
             android:title="Logout" />
     </group>
 </menu>

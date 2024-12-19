@@ -108,7 +108,7 @@ public class MainActivity extends AppCompatActivity {
                 // Redirect to login
                 redirectToLogin();
             }
-        }, 1000); // 1-second delay for simulation
+        }, 500); // 5-milli second delay for simulation
     }
 
     private void redirectToLogin() {
