@@ -6,6 +6,7 @@
     <string name="nav_header_subtitle">android.studio@android.com</string>
     <string name="nav_header_desc">Navigation header</string>
     <string name="action_settings">Settings</string>
+    <string name="default_web_client_id">277374744612-j17uo8bokcfeg054v9b5tp0md078ipm5.apps.googleusercontent.com</string>
 
     <string name="menu_home">Home</string>
 </resources>

@@ -9,6 +9,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.Menu;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.navigation.NavigationView;
@@ -102,6 +103,7 @@ public class MainActivity extends AppCompatActivity {
             public void run() {
                 // Firebase sign-out
                 auth.signOut();
+                Toast.makeText(MainActivity.this, "Logout Successful", Toast.LENGTH_SHORT).show();
 
                 // Dismiss ProgressDialog
                 logoutprogress.dismiss();
