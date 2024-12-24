@@ -2,6 +2,7 @@ package com.example.respondr;
 
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.os.Bundle;
@@ -41,6 +42,7 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
 
 public class login extends AppCompatActivity {
@@ -54,7 +56,6 @@ public class login extends AppCompatActivity {
     private TextView signupRedirect;
     private boolean isPasswordVisible = false;
     private ImageButton googlelogin;
-
 
 
     @Override
@@ -235,6 +236,14 @@ public class login extends AppCompatActivity {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if(task.isSuccessful()){
+                            FirebaseUser user = auth.getCurrentUser();
+                            String DisplayName = user.getDisplayName();
+
+                            SharedPreferences sharedPreferences = getSharedPreferences("AppPrefs", MODE_PRIVATE);
+                            SharedPreferences.Editor editor = sharedPreferences.edit();
+                            editor.putString("username", DisplayName);
+                            editor.apply();
+
                             Toast.makeText(login.this, "Login Successful", Toast.LENGTH_SHORT).show();
                             startActivity(new Intent(login.this, MainActivity.class));
                             finish();

@@ -31,7 +31,8 @@ public class MainActivity extends AppCompatActivity {
     private AppBarConfiguration mAppBarConfiguration;
     private ActivityMainBinding binding;
     private FirebaseAuth auth;
-    private TextView headerUserEmail;
+    private TextView headerUserEmail,headerUserName;
+    private String displayName;
     private ProgressDialog logoutprogress;
 
     @Override
@@ -67,6 +68,9 @@ public class MainActivity extends AppCompatActivity {
         View headerView = navigationView.getHeaderView(0);
         headerUserEmail = headerView.findViewById(R.id.userEmailTextView);
         headerUserEmail.setText(currentUser.getEmail());
+        displayName = currentUser.getDisplayName();
+        headerUserName = headerView.findViewById(R.id.userNameTextView);
+        headerUserName.setText(displayName);
         // Passing each menu ID as a set of Ids because each
         // menu should be considered as top level destinations.
         mAppBarConfiguration = new AppBarConfiguration.Builder(
