@@ -230,23 +230,25 @@ public class login extends AppCompatActivity {
     }
 
     private void firebaseAuth(String idToken) {
-        AuthCredential credential = GoogleAuthProvider.getCredential(idToken,null);
+        AuthCredential credential = GoogleAuthProvider.getCredential(idToken, null);
         auth.signInWithCredential(credential)
                 .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
-                        if(task.isSuccessful()){
+                        if (task.isSuccessful()) {
                             FirebaseUser user = auth.getCurrentUser();
-                            String DisplayName = user.getDisplayName();
+                            if (user != null) {
+                                String displayName = user.getDisplayName();
 
-                            SharedPreferences sharedPreferences = getSharedPreferences("AppPrefs", MODE_PRIVATE);
-                            SharedPreferences.Editor editor = sharedPreferences.edit();
-                            editor.putString("username", DisplayName);
-                            editor.apply();
+                                SharedPreferences sharedPreferences = getSharedPreferences("AppPrefs", MODE_PRIVATE);
+                                SharedPreferences.Editor editor = sharedPreferences.edit();
+                                editor.putString("username", displayName); // Save the username
+                                editor.apply();
 
-                            Toast.makeText(login.this, "Login Successful", Toast.LENGTH_SHORT).show();
-                            startActivity(new Intent(login.this, MainActivity.class));
-                            finish();
+                                Toast.makeText(login.this, "Login Successful", Toast.LENGTH_SHORT).show();
+                                startActivity(new Intent(login.this, MainActivity.class));
+                                finish();
+                            }
                         } else {
                             Toast.makeText(login.this, "Something went wrong, Try again later", Toast.LENGTH_SHORT).show();
                         }

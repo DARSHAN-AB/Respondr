@@ -12,7 +12,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:layout_marginTop="16dp"
+        android:layout_marginTop="10dp"
         android:padding="16dp"
         android:gravity="center_vertical">
 
@@ -20,21 +20,47 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
+            android:id="@+id/welcomeTextVeiw"
             android:text="Welcome back,\nUserName"
-            android:textSize="20sp" />
+            android:textSize="20dp" />
 
         <ImageView
             android:layout_width="80dp"
             android:layout_height="80dp"
+            android:id="@+id/userProfile"
             android:src="@drawable/baseline_person_24" />
     </LinearLayout>
 
-    <RelativeLayout
-        xmlns:android="http://schemas.android.com/apk/res/android"
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="#FFF"
-        android:gravity="center">
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_marginTop="15dp" >
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Are you in emergency?"
+            android:textSize="20dp"
+            android:textStyle="bold"
+            android:textColor="@color/black"
+            android:textAlignment="center"
+            android:gravity="center" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Press the button below, help will \nreach you soon"
+            android:textAlignment="center"
+            android:textSize="16dp"
+            android:gravity="center" />
+
+    </LinearLayout>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="425dp"
+        android:layout_marginTop="0dp">
 
         <!-- Large outer circle -->
         <View
@@ -68,6 +94,51 @@
             android:layout_centerInParent="true" />
     </RelativeLayout>
 
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_marginTop="0dp" >
 
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:text="Your current location"
+            android:gravity="center"
+            android:textAlignment="center"
+            android:textColor="@color/black"
+            android:textStyle="bold"
+            android:textSize="20dp" />
+
+    </LinearLayout>
+
+
+    <!-- Current Address Section -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginTop="10dp"
+        android:background="@drawable/location_card_background"
+        android:padding="16dp">
+
+        <ImageView
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:id="@+id/locationProfile"
+            android:src="@drawable/baseline_person_24"
+            android:layout_marginEnd="16dp"
+            android:contentDescription="Location Icon" />
+
+        <TextView
+            android:id="@+id/current_location"
+            android:layout_width="0dp"
+            android:layout_height="48dp"
+            android:layout_weight="1"
+            android:padding="8dp"
+            android:text="Fetching location..."
+            android:textSize="16sp" />
+
+    </LinearLayout>
 
 </LinearLayout>

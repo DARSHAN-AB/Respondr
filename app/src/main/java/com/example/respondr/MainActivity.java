@@ -68,9 +68,16 @@ public class MainActivity extends AppCompatActivity {
         View headerView = navigationView.getHeaderView(0);
         headerUserEmail = headerView.findViewById(R.id.userEmailTextView);
         headerUserEmail.setText(currentUser.getEmail());
-        displayName = currentUser.getDisplayName();
         headerUserName = headerView.findViewById(R.id.userNameTextView);
-        headerUserName.setText(displayName);
+        if (currentUser != null) {
+            String displayName = currentUser.getDisplayName();
+            String email = currentUser.getEmail();
+
+            if (displayName == null || displayName.isEmpty()) {
+                displayName = email != null ? email.split("@")[0] : "Guest"; // Fallback
+            }
+            headerUserName.setText(displayName);
+        }
         // Passing each menu ID as a set of Ids because each
         // menu should be considered as top level destinations.
         mAppBarConfiguration = new AppBarConfiguration.Builder(
