@@ -58,7 +58,8 @@ public class login extends AppCompatActivity {
     private Button loginButton;
     private TextView signupRedirect;
     private boolean isPasswordVisible = false;
-    private ImageButton googlelogin;
+    private ImageButton googlelogin,applelogin;
+    private ProgressDialog progressL;
 
 
     @Override
@@ -73,13 +74,14 @@ public class login extends AppCompatActivity {
         loginButton = findViewById(R.id.login_button);
         signupRedirect = findViewById(R.id.signupRedirect);
         googlelogin = findViewById(R.id.google);
+        applelogin = findViewById(R.id.apple);
         gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 .requestIdToken(getString(R.string.default_web_client_id))
                 .requestEmail()
                 .build();
         gsc = GoogleSignIn.getClient(this, gso);
 
-        ProgressDialog progressL = new ProgressDialog(login.this);
+        progressL = new ProgressDialog(login.this);
         progressL.setMessage("Logging in...");
         progressL.setCancelable(false);
 
@@ -197,6 +199,13 @@ public class login extends AppCompatActivity {
             }
         });
 
+        applelogin.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                triggerVibration();
+                Toast.makeText(login.this, "Apple login will be coming soon", Toast.LENGTH_SHORT).show();
+            }
+        });
 
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
@@ -224,9 +233,11 @@ public class login extends AppCompatActivity {
                 if (e.getStatusCode() == GoogleSignInStatusCodes.SIGN_IN_CANCELLED) {
                     // User closed the dialog
                     Toast.makeText(this, "Google sign-in cancelled.", Toast.LENGTH_LONG).show();
+                    progressL.dismiss();
                 } else {
                     // Other errors
                     Toast.makeText(this, "Google sign-in failed: " + e.getMessage(), Toast.LENGTH_LONG).show();
+                    progressL.dismiss();
                 }
             }
 
@@ -267,16 +278,13 @@ public class login extends AppCompatActivity {
         if (vibrator != null && vibrator.hasVibrator()) {
             vibrator.vibrate(100); // Vibrate for 100 milliseconds
         } else {
-            Toast.makeText(this, "signing in...", Toast.LENGTH_SHORT).show();
+
         }
     }
 
     // Method to show progress dialog
     private void showProgressDialog() {
-        ProgressDialog progressDialog = new ProgressDialog(this);
-        progressDialog.setMessage("Signing in...");
-        progressDialog.setCancelable(false); // Prevent user from dismissing the dialog
-        progressDialog.show();
+        progressL.show();
     }
 
 }
