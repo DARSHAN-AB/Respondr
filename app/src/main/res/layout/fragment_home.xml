@@ -22,7 +22,7 @@
             android:layout_weight="1"
             android:id="@+id/welcomeTextVeiw"
             android:text="Welcome back,\nUserName"
-            android:textSize="20dp" />
+            android:textSize="16dp" />
 
         <ImageView
             android:layout_width="80dp"
@@ -40,7 +40,7 @@
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Are you in emergency?"
+            android:text="Is there any EMERGENCY ?"
             android:textSize="20dp"
             android:textStyle="bold"
             android:textColor="@color/black"
@@ -115,10 +115,12 @@
 
     <!-- Current Address Section -->
     <LinearLayout
-        android:layout_width="match_parent"
+        android:layout_width="375dp"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:layout_marginTop="10dp"
+        android:layout_marginLeft="18dp"
+        android:layout_marginRight="18dp"
         android:background="@drawable/location_card_background"
         android:padding="16dp">
 

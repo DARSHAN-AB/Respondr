@@ -1,5 +1,8 @@
 package com.example.respondr.ui.home;
 
+import android.Manifest;
+import android.annotation.SuppressLint;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
@@ -8,8 +11,12 @@ import android.graphics.PorterDuff;
 import android.graphics.PorterDuffXfermode;
 import android.graphics.Rect;
 import android.graphics.RectF;
+import android.location.Address;
+import android.location.Geocoder;
+import android.location.Location;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Looper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,23 +24,35 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.example.respondr.R;
 import com.example.respondr.databinding.FragmentHomeBinding;
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationCallback;
+import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.location.LocationResult;
+import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.List;
+import java.util.Locale;
 
 public class HomeFragment extends Fragment {
 
     private FragmentHomeBinding binding;
-    private TextView welcomeTextViewH;
+    private TextView welcomeTextViewH,currentlocation;
     private ImageView profileImageView, locationProfileL;
+    private FusedLocationProviderClient fusedLocationClient;
+    private static final int LOCATION_PERMISSION_REQUEST_CODE = 1;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
@@ -47,6 +66,7 @@ public class HomeFragment extends Fragment {
         welcomeTextViewH = root.findViewById(R.id.welcomeTextVeiw);
         profileImageView = root.findViewById(R.id.userProfile);
         locationProfileL = root.findViewById(R.id.locationProfile);
+        currentlocation = root.findViewById(R.id.current_location);
 
         // Get current user from FirebaseAuth
         FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
@@ -70,7 +90,98 @@ public class HomeFragment extends Fragment {
             profileImageView.setImageResource(R.drawable.baseline_person_24);
         }
 
+        // Initialize FusedLocationProviderClient
+        fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireContext());
+
+        // Request location permissions or fetch location
+        requestLocationPermissionIfNeeded();
+
         return root;
+    }
+
+    private void requestLocationPermissionIfNeeded() {
+        if (ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
+                ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            // Request permissions
+            requestPermissions(new String[]{
+                    Manifest.permission.ACCESS_FINE_LOCATION,
+                    Manifest.permission.ACCESS_COARSE_LOCATION
+            }, LOCATION_PERMISSION_REQUEST_CODE);
+        } else {
+            // Permissions already granted; fetch location
+            fetchLocationAndDisplay();
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == LOCATION_PERMISSION_REQUEST_CODE) {
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                // Permission granted; fetch location
+                fetchLocationAndDisplay();
+            } else {
+                // Permission denied
+                currentlocation.setText("Location permission denied.");
+            }
+        }
+    }
+
+    private void fetchLocationAndDisplay() {
+        if (ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
+                ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            // Permissions not granted; do nothing
+            currentlocation.setText("Permission not granted.");
+            return;
+        }
+
+        // Fetch last known location
+        fusedLocationClient.getLastLocation().addOnSuccessListener(requireActivity(), location -> {
+            if (location != null) {
+                // Convert latitude and longitude to address
+                fetchAddressFromLocation(location.getLatitude(), location.getLongitude());
+            } else {
+                currentlocation.setText("Location unavailable. Retrying...");
+                fetchUpdatedLocation(); // Trigger a new location request
+            }
+        }).addOnFailureListener(e -> currentlocation.setText("Failed to get location."));
+    }
+
+    private void fetchAddressFromLocation(double latitude, double longitude) {
+        Geocoder geocoder = new Geocoder(getContext(), Locale.getDefault());
+        try {
+            List<Address> addresses = geocoder.getFromLocation(latitude, longitude, 1);
+            if (addresses != null && !addresses.isEmpty()) {
+                Address address = addresses.get(0);
+                currentlocation.setText(address.getAddressLine(0));
+            } else {
+                currentlocation.setText("Unable to fetch address.");
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+            currentlocation.setText("Error fetching address.");
+        }
+    }
+
+    @SuppressLint("MissingPermission")
+    private void fetchUpdatedLocation() {
+        fusedLocationClient.requestLocationUpdates(
+                LocationRequest.create().setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY).setInterval(1000),
+                new LocationCallback() {
+                    @SuppressLint("MissingPermission")
+                    @Override
+                    public void onLocationResult(@NonNull LocationResult locationResult) {
+                        fusedLocationClient.removeLocationUpdates(this); // Stop updates after receiving
+                        if (!locationResult.getLocations().isEmpty()) {
+                            Location location = locationResult.getLastLocation();
+                            fetchAddressFromLocation(location.getLatitude(), location.getLongitude());
+                        } else {
+                            currentlocation.setText("Still unable to fetch location.");
+                        }
+                    }
+                },
+                Looper.getMainLooper()
+        );
     }
 
     @Override

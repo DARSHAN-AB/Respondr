@@ -1,5 +1,6 @@
 package com.example.respondr;
 
+import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.os.Bundle;
 import android.content.Intent;
@@ -105,24 +106,32 @@ public class MainActivity extends AppCompatActivity {
 
     // Perform Logout with ProgressDialog
     private void logout() {
-        // Show ProgressDialog
-        logoutprogress.show();
+        // Show confirmation dialog
+        new AlertDialog.Builder(this)
+                .setTitle("Confirm Logout")
+                .setMessage("Are you sure you want to logout?")
+                .setPositiveButton("Yes", (dialog, which) -> {
+                    // Show ProgressDialog
+                    logoutprogress.show();
 
-        // Simulate logout process using a handler with a delay
-        new Handler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                // Firebase sign-out
-                auth.signOut();
-                Toast.makeText(MainActivity.this, "Logout Successful", Toast.LENGTH_SHORT).show();
+                    // Simulate logout process using a handler with a delay
+                    new Handler().postDelayed(() -> {
+                        // Firebase sign-out
+                        auth.signOut();
+                        Toast.makeText(MainActivity.this, "Logout Successful", Toast.LENGTH_SHORT).show();
 
-                // Dismiss ProgressDialog
-                logoutprogress.dismiss();
+                        // Dismiss ProgressDialog
+                        logoutprogress.dismiss();
 
-                // Redirect to login
-                redirectToLogin();
-            }
-        }, 500); // 5-milli second delay for simulation
+                        // Redirect to login
+                        redirectToLogin();
+                    }, 500); // 500-millisecond delay for simulation
+                })
+                .setNegativeButton("No", (dialog, which) -> {
+                    // Dismiss the dialog if the user cancels
+                    dialog.dismiss();
+                })
+                .show();
     }
 
     private void redirectToLogin() {

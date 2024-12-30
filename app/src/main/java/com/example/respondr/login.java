@@ -1,11 +1,14 @@
 package com.example.respondr;
 
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Vibrator;
 import android.text.InputType;
 import android.text.SpannableString;
 import android.text.Spanned;
@@ -150,10 +153,10 @@ public class login extends AppCompatActivity {
                 String loginpassword = loginPassword.getText().toString();
                 progressL.dismiss();
 
-                if(!loginemail.isEmpty() && Patterns.EMAIL_ADDRESS.matcher(loginemail).matches()){
-                    if(!loginpassword.isEmpty()){
+                if (!loginemail.isEmpty() && Patterns.EMAIL_ADDRESS.matcher(loginemail).matches()) {
+                    if (!loginpassword.isEmpty()) {
                         progressL.show();
-                        auth.signInWithEmailAndPassword(loginemail,loginpassword)
+                        auth.signInWithEmailAndPassword(loginemail, loginpassword)
                                 .addOnSuccessListener(new OnSuccessListener<AuthResult>() {
                                     @Override
                                     public void onSuccess(AuthResult authResult) {
@@ -186,6 +189,8 @@ public class login extends AppCompatActivity {
         googlelogin.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                triggerVibration();
+                showProgressDialog();
                 gsc.signOut().addOnCompleteListener(task -> {
                     signIn();
                 });
@@ -202,14 +207,14 @@ public class login extends AppCompatActivity {
 
     private void signIn() {
         Intent googleIntent = gsc.getSignInIntent();
-        startActivityForResult(googleIntent,RC_SIGN_IN);
+        startActivityForResult(googleIntent, RC_SIGN_IN);
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        if(requestCode == RC_SIGN_IN){
+        if (requestCode == RC_SIGN_IN) {
             Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(data);
 
             try {
@@ -254,6 +259,24 @@ public class login extends AppCompatActivity {
                         }
                     }
                 });
+    }
+
+    //method for triggering vibration
+    private void triggerVibration() {
+        Vibrator vibrator = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
+        if (vibrator != null && vibrator.hasVibrator()) {
+            vibrator.vibrate(100); // Vibrate for 100 milliseconds
+        } else {
+            Toast.makeText(this, "signing in...", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    // Method to show progress dialog
+    private void showProgressDialog() {
+        ProgressDialog progressDialog = new ProgressDialog(this);
+        progressDialog.setMessage("Signing in...");
+        progressDialog.setCancelable(false); // Prevent user from dismissing the dialog
+        progressDialog.show();
     }
 
 }
