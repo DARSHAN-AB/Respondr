@@ -1,5 +1,7 @@
 package com.example.respondr.ui.home;
 
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -18,9 +20,12 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 
+import java.io.IOException;
+import java.io.InputStream;
+
 public class ProfileVeiwFragment extends Fragment {
 
-    private TextView nameTextView, mobileTextView, emailTextView;
+    private TextView nameTextView, mobileTextView, emailTextView, adressTextView;
     private ImageView profileImageView;
     private String userId;
     private Button editProfileButton;
@@ -35,42 +40,15 @@ public class ProfileVeiwFragment extends Fragment {
         emailTextView = view.findViewById(R.id.et_veiwprofile_email);
         profileImageView = view.findViewById(R.id.iv_veiwprofile_image);
         editProfileButton = view.findViewById(R.id.btn_edit_profile);
+        adressTextView = view.findViewById(R.id.et_veiwaddress);
 
         userId = FirebaseAuth.getInstance().getCurrentUser().getUid();
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        DocumentReference userRef = db.collection("users").document(userId);
 
-        FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
-        if (currentUser != null) {
-            String name = currentUser.getDisplayName();
-            String photoUrl = currentUser.getPhotoUrl() != null ? currentUser.getPhotoUrl().toString() : null;
+        // Fetch and display user data from Firestore
+        loadUserProfileData();
 
-            // Set profile image and name
-            if (name != null) {
-                nameTextView.setText(name);
-            } else {
-                nameTextView.setText("Add your name");
-            }
-
-            // Check if the user has a profile image URL and set it, or set a default image
-            if (photoUrl != null) {
-                // Use a default image for profile if no photo URL is available
-                profileImageView.setImageURI(currentUser.getPhotoUrl());
-            } else {
-                profileImageView.setImageResource(R.drawable.baseline_person_24); // Default image
-            }
-
-            // Retrieve additional details (email, phone) from Firestore
-            FirebaseFirestore db = FirebaseFirestore.getInstance();
-            DocumentReference userRef = db.collection("users").document(currentUser.getUid());
-            userRef.get().addOnSuccessListener(documentSnapshot -> {
-                if (documentSnapshot.exists()) {
-                    String email = documentSnapshot.getString("email");
-                    String phone = documentSnapshot.getString("phone");
-
-                    emailTextView.setText(email != null ? email : "Add your email");
-                    mobileTextView.setText(phone != null ? phone : "Add your phone number");
-                }
-            });
-        }
 
         // Navigate to Edit Fragment when the button is clicked
         editProfileButton.setOnClickListener(v -> {
@@ -79,6 +57,56 @@ public class ProfileVeiwFragment extends Fragment {
         });
 
         return view;
+    }
+
+    // This method will load the user data from Firestore
+    // This method will load the user data from Firestore
+    private void loadUserProfileData() {
+        String userId = FirebaseAuth.getInstance().getCurrentUser().getUid();
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        DocumentReference userRef = db.collection("users").document(userId);
+
+        userRef.get().addOnSuccessListener(documentSnapshot -> {
+            if (documentSnapshot.exists()) {
+                String name = documentSnapshot.getString("name");
+                String email = documentSnapshot.getString("email");
+                String mobile = documentSnapshot.getString("mobile");
+                String address = documentSnapshot.getString("address"); // Fetch address
+                String photoUrl = documentSnapshot.getString("photoUrl");
+
+                nameTextView.setText(name != null ? name : "Add your name");
+                emailTextView.setText(email != null ? email : "Add your email");
+                mobileTextView.setText(mobile != null ? mobile : "Add your mobile");
+                adressTextView.setText(address != null ? address : "Add your address"); // Set address
+                if (photoUrl != null) {
+                    loadImageFromUrl(photoUrl);
+                } else {
+                    profileImageView.setImageResource(R.drawable.baseline_person_24); // Default image
+                }
+            }
+        });
+    }
+
+    // Method to load image from URL
+    private void loadImageFromUrl(String url) {
+        new Thread(() -> {
+            try {
+                // Create a URL object
+                java.net.URL imageUrl = new java.net.URL(url);
+                // Open a connection to the URL
+                java.net.HttpURLConnection connection = (java.net.HttpURLConnection) imageUrl.openConnection();
+                connection.setDoInput(true);
+                connection.connect();
+                // Get the input stream
+                InputStream input = connection.getInputStream();
+                // Decode the input stream into a Bitmap
+                Bitmap bitmap = BitmapFactory.decodeStream(input);
+                // Update the ImageView on the UI thread
+                getActivity().runOnUiThread(() -> profileImageView.setImageBitmap(bitmap));
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }).start();
     }
 }
 

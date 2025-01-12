@@ -43,6 +43,7 @@ import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -57,6 +58,7 @@ public class HomeFragment extends Fragment {
     private TextView welcomeTextViewH,currentlocation,sosButton;
     private ImageView profileImageView, locationProfileL;
     private FusedLocationProviderClient fusedLocationClient;
+    private FirebaseFirestore firestore;
     private static final int LOCATION_PERMISSION_REQUEST_CODE = 1;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
@@ -74,22 +76,38 @@ public class HomeFragment extends Fragment {
         currentlocation = root.findViewById(R.id.current_location);
         sosButton = root.findViewById(R.id.sos_button);
 
-        // Get current user from FirebaseAuth
-        FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
-        if (currentUser != null) {
-            // Retrieve the display name and set it in the TextView
-            String displayName = currentUser.getDisplayName();
-            welcomeTextViewH.setText("Welcome back,\n" + displayName);
-            String photoUrl = currentUser.getPhotoUrl() != null ? currentUser.getPhotoUrl().toString() : null;
+        firestore = FirebaseFirestore.getInstance();
 
-            // Load profile photo from URL
-            if (photoUrl != null) {
-                new LoadProfileImageTask(profileImageView).execute(photoUrl);
-                new LoadProfileImageTask(locationProfileL).execute(photoUrl);
-            } else {
-                // Default profile image
-                profileImageView.setImageResource(R.drawable.baseline_person_24);
-            }
+        // Get current user from FirebaseAuth
+        FirebaseUser  currentUser  = FirebaseAuth.getInstance().getCurrentUser ();
+        if (currentUser  != null) {
+            // Retrieve the display name and set it in the TextView
+            String displayName = currentUser .getDisplayName();
+            welcomeTextViewH.setText("Welcome back,\n" + displayName);
+            String photoUrl = currentUser .getPhotoUrl() != null ? currentUser .getPhotoUrl().toString() : null;
+
+            // Load profile photo from Firestore
+            String userId = currentUser .getUid();
+            firestore.collection("users").document(userId).get().addOnSuccessListener(documentSnapshot -> {
+                if (documentSnapshot.exists()) {
+                    String firestorePhotoUrl = documentSnapshot.getString("photoUrl");
+                    String email = documentSnapshot.getString("email");
+                    String mobile = documentSnapshot.getString("mobile");
+
+                    // Use Firestore photo URL if it exists, otherwise use Google photo
+                    if (firestorePhotoUrl != null) {
+                        new LoadProfileImageTask(profileImageView).execute(firestorePhotoUrl);
+                        new LoadProfileImageTask(locationProfileL).execute(firestorePhotoUrl);
+                    } else {
+                        new LoadProfileImageTask(profileImageView).execute(photoUrl);
+                        new LoadProfileImageTask(locationProfileL).execute(photoUrl);
+                    }
+                } else {
+                    // If no document exists, use Google photo
+                    new LoadProfileImageTask(profileImageView).execute(photoUrl);
+                    new LoadProfileImageTask(locationProfileL).execute(photoUrl);
+                }
+            });
         } else {
             // Default text if user is not signed in
             welcomeTextViewH.setText("Welcome back,\nGuest");
@@ -219,7 +237,6 @@ public class HomeFragment extends Fragment {
 
     // AsyncTask to load the profile image from the URL
     private static class LoadProfileImageTask extends AsyncTask<String, Void, Bitmap> {
-
         private final ImageView imageView;
 
         public LoadProfileImageTask(ImageView imageView) {
@@ -245,11 +262,12 @@ public class HomeFragment extends Fragment {
         @Override
         protected void onPostExecute(Bitmap bitmap) {
             if (bitmap != null) {
-                imageView.setImageBitmap(bitmap);
+                imageView .setImageBitmap(bitmap);
             } else {
-                imageView.setImageResource(R.drawable.baseline_person_24); // Fallback image
+                imageView.setImageResource(R.drawable.baseline_person_24); // Default image if loading fails
             }
         }
+
 
         private Bitmap getCircularBitmap(Bitmap bitmap) {
             int width = bitmap.getWidth();
@@ -276,6 +294,5 @@ public class HomeFragment extends Fragment {
 
             return output;
         }
-
     }
 }
