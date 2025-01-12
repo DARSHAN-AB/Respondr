@@ -17,4 +17,46 @@
         android:label="Inbox"
         tools:layout="@layout/fragment_inbox" />
 
+    <fragment
+        android:id="@+id/emergencyFragment"
+        android:name="com.example.respondr.ui.home.EmergencyFragment"
+        android:label="Emergency">
+        <action
+            android:id="@+id/action_to_emergencyFragment"
+            app:destination="@id/emergencyFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/incidentReportFragment"
+        android:name="com.example.respondr.ui.home.IncidentReportFragment"
+        android:label="Incident Report"
+        tools:layout="@layout/fragment_incident_report" />
+
+    <fragment
+        android:id="@+id/settings"
+        android:name="com.example.respondr.ui.home.Settingsfragment"
+        android:label="Settings"
+        tools:layout="@layout/fragment_settings" />
+
+    <fragment
+        android:id="@+id/ProfileVeiwFragment"
+        android:name="com.example.respondr.ui.home.ProfileVeiwFragment"
+        android:label="Profile"
+        tools:layout="@layout/fragment_profile_veiw" />
+
+    <fragment
+        android:id="@+id/profileEditFragment"
+        android:name="com.example.respondr.ui.home.ProfileEditFragment"
+        android:label="Profile"
+        tools:layout="@layout/fragment_profile_settings" />
+
+    <fragment
+        android:id="@+id/modeFragment"
+        android:name="com.example.respondr.ui.home.ModeFragment"
+        android:label="Mode"
+        tools:layout="@layout/fragment_mode" />
+
+
+
+
 </navigation>

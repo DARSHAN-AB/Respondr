@@ -96,7 +96,7 @@ public class MainActivity extends AppCompatActivity {
         // Passing each menu ID as a set of Ids because each
         // menu should be considered as top level destinations.
         mAppBarConfiguration = new AppBarConfiguration.Builder(
-                R.id.nav_home, R.id.inbox)
+                R.id.nav_home, R.id.inbox, R.id.settings)
                 .setOpenableLayout(drawer)
                 .build();
 
@@ -111,12 +111,13 @@ public class MainActivity extends AppCompatActivity {
                 int id = item.getItemId();
                 if (id == R.id.logout_button) {
                     logout();
-                } else {
+                } else{
                     NavigationUI.onNavDestinationSelected(item, navController);
                 }
                 drawer.closeDrawer(binding.navView);
                 return true;
             }
+
         });
     }
 

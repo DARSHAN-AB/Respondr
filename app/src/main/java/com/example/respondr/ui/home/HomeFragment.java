@@ -2,6 +2,8 @@ package com.example.respondr.ui.home;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -26,7 +28,10 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.navigation.NavController;
+import androidx.navigation.Navigation;
 
 import com.example.respondr.R;
 import com.example.respondr.databinding.FragmentHomeBinding;
@@ -49,7 +54,7 @@ import java.util.Locale;
 public class HomeFragment extends Fragment {
 
     private FragmentHomeBinding binding;
-    private TextView welcomeTextViewH,currentlocation;
+    private TextView welcomeTextViewH,currentlocation,sosButton;
     private ImageView profileImageView, locationProfileL;
     private FusedLocationProviderClient fusedLocationClient;
     private static final int LOCATION_PERMISSION_REQUEST_CODE = 1;
@@ -67,6 +72,7 @@ public class HomeFragment extends Fragment {
         profileImageView = root.findViewById(R.id.userProfile);
         locationProfileL = root.findViewById(R.id.locationProfile);
         currentlocation = root.findViewById(R.id.current_location);
+        sosButton = root.findViewById(R.id.sos_button);
 
         // Get current user from FirebaseAuth
         FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
@@ -95,6 +101,9 @@ public class HomeFragment extends Fragment {
 
         // Request location permissions or fetch location
         requestLocationPermissionIfNeeded();
+
+        // Set onClickListener for SOS TextView
+        sosButton.setOnClickListener(v -> openEmergencyFragment());
 
         return root;
     }
@@ -140,6 +149,15 @@ public class HomeFragment extends Fragment {
             if (location != null) {
                 // Convert latitude and longitude to address
                 fetchAddressFromLocation(location.getLatitude(), location.getLongitude());
+
+                // Convert location to address
+                String locationAddress = fetchAddressFromLocation(location.getLatitude(), location.getLongitude());
+
+                // Store the location in SharedPreferences
+                SharedPreferences sharedPreferences = requireContext().getSharedPreferences("AppPrefs", Context.MODE_PRIVATE);
+                SharedPreferences.Editor editor = sharedPreferences.edit();
+                editor.putString("current_location", locationAddress);
+                editor.apply();
             } else {
                 currentlocation.setText("Location unavailable. Retrying...");
                 fetchUpdatedLocation(); // Trigger a new location request
@@ -147,13 +165,14 @@ public class HomeFragment extends Fragment {
         }).addOnFailureListener(e -> currentlocation.setText("Failed to get location."));
     }
 
-    private void fetchAddressFromLocation(double latitude, double longitude) {
+    private String fetchAddressFromLocation(double latitude, double longitude) {
         Geocoder geocoder = new Geocoder(getContext(), Locale.getDefault());
         try {
             List<Address> addresses = geocoder.getFromLocation(latitude, longitude, 1);
             if (addresses != null && !addresses.isEmpty()) {
                 Address address = addresses.get(0);
                 currentlocation.setText(address.getAddressLine(0));
+                return addresses.get(0).getAddressLine(0);
             } else {
                 currentlocation.setText("Unable to fetch address.");
             }
@@ -161,6 +180,7 @@ public class HomeFragment extends Fragment {
             e.printStackTrace();
             currentlocation.setText("Error fetching address.");
         }
+        return "Location not available";
     }
 
     @SuppressLint("MissingPermission")
@@ -188,6 +208,13 @@ public class HomeFragment extends Fragment {
     public void onDestroyView() {
         super.onDestroyView();
         binding = null;
+    }
+
+    // Method to navigate to EmergencyFragment using NavController
+    private void openEmergencyFragment() {
+        // Use the NavController to navigate to the EmergencyFragment
+        NavController navController = Navigation.findNavController(requireActivity(), R.id.nav_host_fragment_content_main);
+        navController.navigate(R.id.emergencyFragment);
     }
 
     // AsyncTask to load the profile image from the URL
