@@ -53,6 +53,8 @@
             android:name="osmdroid.tilePath"
             android:value="osmdroid/tiles" />
 
+        <activity android:name=".ResponderProfileActivity"></activity>
+        <activity android:name=".ResponderProfileEditActivity"></activity>
         <activity android:name=".termsandconditions" />
 
     </application>

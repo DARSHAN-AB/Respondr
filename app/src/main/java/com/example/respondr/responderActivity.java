@@ -6,7 +6,6 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.Looper;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -18,6 +17,8 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 import org.osmdroid.config.Configuration;
 import org.osmdroid.util.GeoPoint;
@@ -28,6 +29,7 @@ import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay;
 public class responderActivity extends AppCompatActivity {
 
     private FirebaseAuth auth;
+    private FirebaseFirestore firestore;
     private MapView mapView;
     private MyLocationNewOverlay locationOverlay;
     private ProgressDialog logoutProgressDialog;
@@ -38,6 +40,7 @@ public class responderActivity extends AppCompatActivity {
         setContentView(R.layout.activity_responder);
 
         auth = FirebaseAuth.getInstance();
+        firestore = FirebaseFirestore.getInstance();
         logoutProgressDialog = new ProgressDialog(this);
         logoutProgressDialog.setMessage("Logging out...");
         logoutProgressDialog.setCancelable(false);
@@ -65,6 +68,9 @@ public class responderActivity extends AppCompatActivity {
             // Permissions granted on first run, set up location overlay
             setupLocationOverlay();
         }
+
+        // Check if ID proof is uploaded after login
+        checkIDProof();
 
         // Check user login
         if (auth.getCurrentUser() == null) {
@@ -127,7 +133,7 @@ public class responderActivity extends AppCompatActivity {
 
         if (id == R.id.action_profile) {
             // Navigate to Profile screen
-            Intent profileIntent = new Intent(this, ResponderProfile.class);
+            Intent profileIntent = new Intent(this, ResponderProfileActivity.class);
             startActivity(profileIntent);
             return true;
         } else if (id == R.id.action_logout) {
@@ -165,6 +171,38 @@ public class responderActivity extends AppCompatActivity {
                     // Dismiss the dialog if the user cancels
                     dialog.dismiss();
                 })
+                .show();
+    }
+
+    private void checkIDProof() {
+        String userId = auth.getCurrentUser().getUid();
+        DocumentReference userDoc = firestore.collection("users").document(userId);
+
+        userDoc.get().addOnSuccessListener(documentSnapshot -> {
+            if (documentSnapshot.exists()) {
+                String idProofUrl = documentSnapshot.getString("idProofUrl");
+
+                // If ID proof URL is null or missing, show the dialog after 5 seconds
+                if (idProofUrl == null || idProofUrl.isEmpty()) {
+                    // Delay the dialog by 5 seconds
+                    new Handler().postDelayed(() -> showIDProofDialog(), 5000);
+                }
+            }
+        });
+    }
+
+    private void showIDProofDialog() {
+        // Create an AlertDialog asking the user to upload ID proof
+        new AlertDialog.Builder(this)
+                .setTitle("Upload ID Proof")
+                .setMessage("Please upload your ID proof to complete your profile.")
+                .setCancelable(false)
+                .setPositiveButton("Edit Profile", (dialog, which) -> {
+                    // Navigate to profile edit activity if user clicks "Edit Profile"
+                    Intent intent = new Intent(responderActivity.this, ResponderProfileEditActivity.class);
+                    startActivity(intent);
+                })
+                .setNegativeButton("Cancel", (dialog, which) -> dialog.dismiss())
                 .show();
     }
 
