@@ -38,6 +38,11 @@
             </intent-filter>
         </activity>
 
+        <activity
+            android:name=".responderActivity"
+            android:exported="true"
+            android:theme="@style/Theme.Respondr.NoActionBar" />
+
 
         <activity android:name=".termsandconditions" />
 

@@ -11,8 +11,6 @@
     android:background="@drawable/loginback"
     tools:context=".login">
 
-
-
     <androidx.cardview.widget.CardView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -113,21 +111,13 @@
                 android:drawablePadding="8dp"
                 android:textColor="@color/black"/>
 
-            <CheckBox
-                android:id="@+id/login_checkbox"
-                android:layout_width="wrap_content"
-                android:layout_height="30dp"
-                android:layout_marginTop="10dp"
-                android:text="Remember me"
-                android:textSize="15sp" />
-
             <Button
                 android:layout_width="match_parent"
                 android:layout_height="55dp"
                 android:text="Login"
                 android:id="@+id/login_button"
                 android:textSize="18sp"
-                android:layout_marginTop="10dp"
+                android:layout_marginTop="16dp"
                 app:cornerRadius = "20dp"/>
 
             <LinearLayout

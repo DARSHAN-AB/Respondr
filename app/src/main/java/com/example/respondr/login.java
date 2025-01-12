@@ -1,5 +1,6 @@
 package com.example.respondr;
 
+import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
@@ -7,7 +8,6 @@ import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.os.Bundle;
-import android.os.Handler;
 import android.os.Vibrator;
 import android.text.InputType;
 import android.text.SpannableString;
@@ -21,6 +21,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.RadioButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -47,6 +48,11 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.FirebaseFirestore;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class login extends AppCompatActivity {
 
@@ -60,6 +66,8 @@ public class login extends AppCompatActivity {
     private boolean isPasswordVisible = false;
     private ImageButton googlelogin,applelogin;
     private ProgressDialog progressL;
+    private boolean isActivityVisible = false;
+
 
 
     @Override
@@ -164,8 +172,10 @@ public class login extends AppCompatActivity {
                                     public void onSuccess(AuthResult authResult) {
                                         progressL.dismiss();
                                         Toast.makeText(login.this, "Login Successful", Toast.LENGTH_SHORT).show();
-                                        startActivity(new Intent(login.this, MainActivity.class));
-                                        finish();
+                                        FirebaseUser user = auth.getCurrentUser();
+                                        if (user != null) {
+                                            showRoleSelectionDialog(user); // Show role selection after successful login
+                                        }
                                     }
                                 }).addOnFailureListener(new OnFailureListener() {
                                     @Override
@@ -254,6 +264,8 @@ public class login extends AppCompatActivity {
                         if (task.isSuccessful()) {
                             FirebaseUser user = auth.getCurrentUser();
                             if (user != null) {
+
+                                checkUserRoleInFirestore(user);
                                 String displayName = user.getDisplayName();
 
                                 SharedPreferences sharedPreferences = getSharedPreferences("AppPrefs", MODE_PRIVATE);
@@ -262,8 +274,6 @@ public class login extends AppCompatActivity {
                                 editor.apply();
 
                                 Toast.makeText(login.this, "Login Successful", Toast.LENGTH_SHORT).show();
-                                startActivity(new Intent(login.this, MainActivity.class));
-                                finish();
                             }
                         } else {
                             Toast.makeText(login.this, "Something went wrong, Try again later", Toast.LENGTH_SHORT).show();
@@ -285,6 +295,117 @@ public class login extends AppCompatActivity {
     // Method to show progress dialog
     private void showProgressDialog() {
         progressL.show();
+    }
+
+    // save data to firestore database
+
+
+    private void checkUserRoleInFirestore(FirebaseUser user) {
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        DocumentReference docRef = db.collection("users").document(user.getUid());
+
+        docRef.get().addOnSuccessListener(documentSnapshot -> {
+            if (documentSnapshot.exists()) {
+                // Role already exists, no need for role selection
+                String role = documentSnapshot.getString("role");
+                if (role != null && !role.isEmpty()) {
+                    // Save the role in SharedPreferences
+                    SharedPreferences sharedPreferences = getSharedPreferences("AppPrefs", MODE_PRIVATE);
+                    SharedPreferences.Editor editor = sharedPreferences.edit();
+                    editor.putString("role", role); // Save the role
+                    editor.apply();
+                    // Proceed to the next activity directly (HomeFragment or ResponderFragment)
+                    navigateToNextActivity(role);
+                } else {
+                    // Role is empty, ask for role selection
+                    showRoleSelectionDialog(user);
+                }
+            } else {
+                // User document does not exist, ask for role selection
+                showRoleSelectionDialog(user);
+            }
+        }).addOnFailureListener(e -> {
+            Toast.makeText(login.this, "Error checking role: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+        });
+    }
+
+    private void showRoleSelectionDialog(FirebaseUser user) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Select Role");
+
+        View customLayout = getLayoutInflater().inflate(R.layout.role_selection_layout, null);
+        builder.setView(customLayout);
+
+        RadioButton radioPublic = customLayout.findViewById(R.id.radioPublic);
+        RadioButton radioResponder = customLayout.findViewById(R.id.radioResponder);
+
+        builder.setPositiveButton("Save", (dialog, which) -> {
+            String selectedRole = radioPublic.isChecked() ? "Public" : "Responder";
+
+            // Save the role to SharedPreferences
+            SharedPreferences sharedPreferences = getSharedPreferences("AppPrefs", MODE_PRIVATE);
+            SharedPreferences.Editor editor = sharedPreferences.edit();
+            editor.putString("role", selectedRole); // Save selected role
+            editor.apply();
+
+            saveUserRoleToFirestore(user, selectedRole);
+
+            // Navigate to the appropriate activity
+            navigateToNextActivity(selectedRole);
+        });
+
+        builder.setNegativeButton("Cancel", (dialog, which) -> dialog.dismiss());
+        builder.show();
+    }
+
+
+    private void saveUserRoleToFirestore(FirebaseUser user, String selectedRole) {
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        Map<String, Object> userData = new HashMap<>();
+        userData.put("name", user.getDisplayName());
+        userData.put("email", user.getEmail());
+        userData.put("role", selectedRole);
+
+        db.collection("users").document(user.getUid())
+                .set(userData)
+                .addOnSuccessListener(aVoid -> {
+                    Toast.makeText(login.this, "Role saved successfully", Toast.LENGTH_SHORT).show();
+                    navigateToNextActivity(selectedRole);
+                })
+                .addOnFailureListener(e -> {
+                    Toast.makeText(login.this, "Error saving role", Toast.LENGTH_SHORT).show();
+                });
+    }
+
+    private void navigateToNextActivity(String selectedRole) {
+        Intent intent;
+        if ("Public".equals(selectedRole)) {
+            // Navigate to HomeActivity or fragment for "Public" role
+            intent = new Intent(login.this, MainActivity.class);
+        } else {
+            // Navigate to ResponderActivity or fragment for "Responder" role
+            intent = new Intent(login.this, responderActivity.class);
+        }
+        startActivity(intent);
+        finish(); // Finish the login activity so the user can't go back to it
+    }
+
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        isActivityVisible = true;
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        isActivityVisible = false;
+
+        // Dismiss the dialog
+        if (progressL != null && progressL.isShowing()) {
+            progressL.dismiss();
+        }
     }
 
 }

@@ -2,10 +2,10 @@ package com.example.respondr;
 
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.content.Intent;
 import android.os.Handler;
-import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.Menu;
@@ -54,6 +54,19 @@ public class MainActivity extends AppCompatActivity {
             return; // Prevent further execution
         }
 
+        // Check the role from SharedPreferences
+        SharedPreferences sharedPreferences = getSharedPreferences("AppPrefs", MODE_PRIVATE);
+        String userRole = sharedPreferences.getString("role", "Public"); // Default to "Public"
+
+        // Redirect based on role
+        if ("Responder".equals(userRole)) {
+            Intent intent = new Intent(MainActivity.this, responderActivity.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK); // Clear back stack
+            startActivity(intent);
+            finish(); // Close MainActivity
+            return; // Prevent further execution
+        }
+
         setSupportActionBar(binding.appBarMain.toolbar);
         binding.appBarMain.fab.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -79,16 +92,19 @@ public class MainActivity extends AppCompatActivity {
             }
             headerUserName.setText(displayName);
         }
+
         // Passing each menu ID as a set of Ids because each
         // menu should be considered as top level destinations.
         mAppBarConfiguration = new AppBarConfiguration.Builder(
                 R.id.nav_home, R.id.inbox)
                 .setOpenableLayout(drawer)
                 .build();
+
+        // Setup Navigation
         NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment_content_main);
         NavigationUI.setupActionBarWithNavController(this, navController, mAppBarConfiguration);
-        NavigationUI.setupWithNavController(navigationView, navController);
-        
+        NavigationUI.setupWithNavController(binding.navView, navController);
+
         navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
