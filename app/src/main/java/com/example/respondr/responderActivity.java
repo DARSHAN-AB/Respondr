@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Looper;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -61,7 +62,7 @@ public class responderActivity extends AppCompatActivity {
                     android.Manifest.permission.ACCESS_COARSE_LOCATION
             }, 1);
         } else {
-            // Permissions already granted, set up location overlay
+            // Permissions granted on first run, set up location overlay
             setupLocationOverlay();
         }
 
@@ -74,7 +75,8 @@ public class responderActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        // Check for permissions again when resuming activity
+
+        // Check permissions again on resume
         if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
                 && ContextCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
             setupLocationOverlay();
@@ -90,11 +92,15 @@ public class responderActivity extends AppCompatActivity {
             mapView.getOverlays().add(locationOverlay);
         }
 
+        // Wait for first location fix and update the map on the main thread
         locationOverlay.runOnFirstFix(() -> {
             GeoPoint currentLocation = locationOverlay.getMyLocation();
             if (currentLocation != null) {
-                mapView.getController().setCenter(currentLocation);
-                addResponderMarker(currentLocation);
+                // Make sure to update the map view on the main thread
+                runOnUiThread(() -> {
+                    mapView.getController().setCenter(currentLocation);
+                    addResponderMarker(currentLocation);
+                });
             }
         });
     }
