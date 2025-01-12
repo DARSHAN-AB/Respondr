@@ -1,15 +1,20 @@
-<?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:layout_marginTop="10dp">
+    android:layout_height="match_parent">
 
-    <Button
+    <!-- Toolbar at the top -->
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/toolbar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Logout"
-        android:background="@drawable/lavendar_border"
-        android:id="@+id/reslogout"
-        android:layout_marginTop="10dp" />
+        android:background="?android:attr/colorPrimary"
+        android:title="Responder Activity"
+        android:titleTextColor="#fff" />
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+    <!-- MapView below the toolbar -->
+    <org.osmdroid.views.MapView
+        android:id="@+id/mapView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@id/toolbar" />
+</RelativeLayout>

@@ -49,6 +49,7 @@ dependencies {
     implementation(libs.play.services.location)
     implementation(libs.firebase.firestore)
     implementation(libs.firebase.storage)
+    implementation(libs.osmdroid)
     testImplementation(libs.junit)
     androidTestImplementation(libs.ext.junit)
     androidTestImplementation(libs.espresso.core)

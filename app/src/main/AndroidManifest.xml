@@ -46,6 +46,12 @@
             android:exported="true"
             android:theme="@style/Theme.Respondr.NoActionBar" />
 
+        <meta-data
+            android:name="osmdroid.basePath"
+            android:value="osmdroid" />
+        <meta-data
+            android:name="osmdroid.tilePath"
+            android:value="osmdroid/tiles" />
 
         <activity android:name=".termsandconditions" />
 
