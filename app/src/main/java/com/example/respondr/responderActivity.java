@@ -202,7 +202,11 @@ public class responderActivity extends AppCompatActivity {
                     Intent intent = new Intent(responderActivity.this, ResponderProfileEditActivity.class);
                     startActivity(intent);
                 })
-                .setNegativeButton("Cancel", (dialog, which) -> dialog.dismiss())
+                .setNegativeButton("Cancel", (dialog, which) -> {
+                    // Show the toast message when "Cancel" is clicked
+                    Toast.makeText(responderActivity.this, "Please provide your id proof in the profile", Toast.LENGTH_SHORT).show();
+                    dialog.dismiss(); // Dismiss the dialog
+                })
                 .show();
     }
 

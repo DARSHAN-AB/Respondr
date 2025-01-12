@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
@@ -51,6 +52,9 @@ public class ResponderProfileEditActivity extends AppCompatActivity {
         btnSaveProfile = findViewById(R.id.btnSaveProfile);
         tvIDProofFileName = findViewById(R.id.tv_add_attachmentsr);
 
+        // Set up the roles in the Spinner
+        setUpRoleSpinner();
+
         // Set click listener to open gallery or file manager
         tvIDProofFileName.setOnClickListener(v -> openFilePicker());
 
@@ -59,6 +63,17 @@ public class ResponderProfileEditActivity extends AppCompatActivity {
 
         // Prefill the data if available
         prefillData();
+    }
+
+    private void setUpRoleSpinner() {
+        // Define roles to show in the spinner
+        String[] roles = new String[]{"Ambulance", "Fire", "Police"};
+
+        // Set up the ArrayAdapter with the roles
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_dropdown_item, roles);
+
+        // Set the adapter to the spinner
+        spinnerRole.setAdapter(adapter);
     }
 
     private void prefillData() {
@@ -74,7 +89,9 @@ public class ResponderProfileEditActivity extends AppCompatActivity {
 
                         editName.setText(name);
                         editEmail.setText(email);
-                        // Set the role in spinner (you can improve this logic based on your requirement)
+
+                        // Set the role in the spinner (you can improve this logic based on your requirement)
+                        setRoleInSpinner(role);
 
                         // Show the file name of the uploaded ID proof if exists
                         if (idProofUrl != null && !idProofUrl.isEmpty()) {
@@ -83,6 +100,17 @@ public class ResponderProfileEditActivity extends AppCompatActivity {
                         }
                     }
                 });
+    }
+
+    private void setRoleInSpinner(String role) {
+        // Set the role in the spinner from Firestore data (this part can be customized)
+        String[] roles = new String[]{"Ambulance", "Fire", "Police"};
+        for (int i = 0; i < roles.length; i++) {
+            if (roles[i].equals(role)) {
+                spinnerRole.setSelection(i);
+                break;
+            }
+        }
     }
 
     private void openFilePicker() {

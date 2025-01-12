@@ -6,12 +6,41 @@
     android:orientation="vertical"
     android:padding="16dp">
 
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Your Profile"
+        android:textAlignment="center"
+        android:textStyle="italic"
+        android:textColor="@color/black"
+        android:textSize="25dp" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Name"
+        android:textAlignment="textStart"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        android:textColor="@color/black" />
+
     <EditText
         android:id="@+id/editName"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
         android:hint="Name"
         android:textSize="18sp"/>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:text="Email"
+        android:textAlignment="textStart"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        android:textColor="@color/black" />
 
     <EditText
         android:id="@+id/editEmail"
@@ -19,21 +48,32 @@
         android:layout_height="wrap_content"
         android:hint="Email"
         android:textSize="16sp"
-        android:layout_marginTop="16dp"/>
+        android:layout_marginTop="10dp"/>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:text="Select your role"
+        android:textAlignment="textStart"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        android:textColor="@color/black" />
 
     <Spinner
         android:id="@+id/spinnerRole"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"/>
+        android:layout_marginTop="10dp"/>
 
     <TextView
         android:id="@+id/tv_attachments"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
-        android:text="Select ID proof"
-        android:textSize="16sp"
+        android:text="Select ID proof for your role"
+        android:textStyle="bold"
+        android:textSize="20sp"
         android:textColor="#000000"
         app:layout_constraintTop_toBottomOf="@id/spinnerRole"
         app:layout_constraintStart_toStartOf="parent" />
