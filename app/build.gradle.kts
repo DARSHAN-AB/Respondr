@@ -57,5 +57,7 @@ dependencies {
     implementation("com.google.firebase:firebase-auth")
     implementation("com.google.android.gms:play-services-auth:21.3.0")
     implementation ("com.google.firebase:firebase-firestore:24.0.0")
+    implementation ("org.osmdroid:osmdroid-android:6.1.10") // Latest OSMDroid version
+    implementation ("com.google.android.material:material:1.9.0") // For FAB and Toolbar
 
 }
